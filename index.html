@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Desempenho · iGreen Energy</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f0fdf4;padding:2rem;font-size:14px;color:#111}
+.wrap{max-width:800px;margin:0 auto}
+
+/* Header */
+.header{display:flex;align-items:center;gap:14px;margin-bottom:2rem;background:#fff;border-radius:16px;padding:1.25rem 1.5rem;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.header h1{font-size:20px;font-weight:700;color:#052e16}
+.header p{font-size:13px;color:#666;margin-top:2px}
+
+.lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:#16a34a;margin-bottom:.6rem}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:1.5rem;margin-bottom:1.25rem;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+.card.done{border-color:#16a34a}
+
+/* Drop zone */
+.dz{border:2px dashed #86efac;border-radius:12px;padding:2rem 1rem;text-align:center;cursor:pointer;transition:all .15s;background:#f0fdf4}
+.dz:hover,.dz.over{background:#dcfce7;border-color:#16a34a}
+.dz h3{font-size:14px;font-weight:600;margin-bottom:3px;color:#052e16}
+.dz p{font-size:12px;color:#6b7280}
+
+#pw{display:none;margin-top:.75rem}
+#pbg{background:#e5e7eb;border-radius:4px;height:6px;overflow:hidden}
+#pb{height:6px;background:#16a34a;width:0%;transition:width .3s;border-radius:4px}
+#pl{font-size:12px;color:#6b7280;margin-top:5px}
+.badge{display:inline-flex;gap:6px;font-size:12px;padding:4px 12px;border-radius:20px;background:#d1fae5;color:#065f46;font-weight:500;margin-top:.6rem}
+
+/* Chat inputs */
+.chat-col-labels{display:grid;grid-template-columns:1fr 120px 120px 36px;gap:8px;margin-bottom:6px}
+.chat-col-labels span{font-size:11px;font-weight:600;color:#9ca3af;text-transform:uppercase;text-align:center}
+.chat-col-labels span:first-child{text-align:left}
+.chat-row{display:grid;grid-template-columns:1fr 120px 120px 36px;gap:8px;align-items:center;margin-bottom:8px}
+.chat-row input[type=text]{padding:7px 10px;border-radius:8px;border:1px solid #d1d5db;font-size:13px;width:100%}
+.chat-row input[type=number]{width:100%;padding:7px 8px;border-radius:8px;border:1px solid #d1d5db;font-size:13px;text-align:center}
+.chat-row input:focus{outline:2px solid #16a34a;border-color:#16a34a}
+.rm-btn{width:34px;height:34px;border-radius:8px;border:1px solid #fee2e2;background:#fff;color:#ef4444;cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center}
+.rm-btn:hover{background:#fef2f2}
+.add-btn{display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:10px;border:1.5px dashed #86efac;background:#f0fdf4;color:#16a34a;font-size:13px;font-weight:600;cursor:pointer;width:100%;justify-content:center;margin-top:4px}
+.add-btn:hover{background:#dcfce7}
+
+.gen-btn{width:100%;padding:13px;border-radius:12px;background:#16a34a;color:#fff;border:none;cursor:pointer;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:8px}
+.gen-btn:hover{background:#15803d}
+.gen-btn:disabled{background:#e5e7eb;color:#9ca3af;cursor:not-allowed}
+
+/* ── RESULTADO PARA PRINT ── */
+#resultado{display:none;margin-top:1.5rem}
+
+.res-card{background:#052e16;border-radius:16px;padding:1rem 1.25rem;color:#fff;position:relative;overflow:hidden}
+
+/* Decoração */
+.res-card::before{content:'☀';position:absolute;top:-10px;right:16px;font-size:60px;opacity:.12;line-height:1}
+.res-card::after{content:'⚡';position:absolute;bottom:6px;left:12px;font-size:40px;opacity:.08;line-height:1}
+
+.res-header{margin-bottom:.75rem}
+.res-header .brand{font-size:11px;font-weight:700;letter-spacing:.1em;color:#6ee7b7;margin-bottom:3px}
+.res-header h2{font-size:15px;font-weight:700;color:#fff;margin-bottom:2px}
+.res-header .date{font-size:11px;color:#a7f3d0}
+
+.res-table{width:100%;border-collapse:collapse}
+.res-table th{padding:5px 8px;text-align:center;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#6ee7b7;border-bottom:1px solid rgba(110,231,183,.2)}
+.res-table th:first-child{text-align:left}
+.res-table td{padding:5px 8px;text-align:center;border-bottom:1px solid rgba(255,255,255,.06);vertical-align:middle}
+.res-table td:first-child{text-align:left}
+.res-table tr:last-child td{border-bottom:none}
+.res-table tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+
+.rank{font-size:10px;color:#6ee7b7;margin-right:4px;font-weight:600}
+.name{font-size:12px;font-weight:500;color:#f0fdf4}
+.pill-green{display:inline-block;padding:2px 10px;border-radius:20px;background:rgba(16,185,129,.2);color:#10b981;font-weight:700;font-size:12px;min-width:36px}
+.pill-light{display:inline-block;padding:2px 10px;border-radius:20px;background:rgba(110,231,183,.12);color:#6ee7b7;font-weight:600;font-size:12px;min-width:36px}
+.type-lig{display:inline-block;font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;background:rgba(16,185,129,.2);color:#34d399;margin-right:3px;vertical-align:middle}
+.type-chat{display:inline-block;font-size:8px;font-weight:700;padding:1px 4px;border-radius:3px;background:rgba(251,191,36,.2);color:#fbbf24;margin-right:3px;vertical-align:middle}
+
+.total-row td{background:rgba(16,185,129,.15) !important;border-top:1px solid rgba(110,231,183,.3) !important;border-bottom:none !important}
+.total-row .name{color:#a7f3d0;font-weight:700;font-size:11px;letter-spacing:.05em;text-transform:uppercase}
+.total-row .pill-green{font-size:13px;color:#fff;background:rgba(16,185,129,.3)}
+.total-row .pill-light{font-size:13px;color:#fff;background:rgba(110,231,183,.2)}
+
+.res-footer{margin-top:.5rem;text-align:center;font-size:10px;color:rgba(167,243,208,.5)}
+
+.hint{font-size:12px;color:#9ca3af;margin-bottom:.75rem;font-style:italic}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="header">
+  <div style="font-size:36px">⚡</div>
+  <div>
+    <h1>Desempenho de Colaboradores</h1>
+    <p>iGreen Energy · Ligações + Chat</p>
+  </div>
+</div>
+
+<div class="lbl">1 · CSV de ligações</div>
+<div class="card" id="c1">
+  <div class="dz" id="dz" onclick="document.getElementById('fi').click()"
+    ondragover="event.preventDefault();event.stopPropagation();this.classList.add('over')"
+    ondragleave="this.classList.remove('over')"
+    ondrop="dp(event)">
+    <div style="font-size:30px;margin-bottom:8px">📄</div>
+    <h3>Arraste o CSV aqui</h3>
+    <p>≥15s e Geral preenchidos automaticamente</p>
+  </div>
+  <input type="file" id="fi" accept=".csv,.txt" style="display:none" onchange="hCSV(this.files[0])">
+  <div id="pw"><div id="pbg"><div id="pb"></div></div><div id="pl"></div></div>
+  <div id="csv-badge"></div>
+</div>
+
+<div class="lbl">2 · Colaboradores do Chat <span style="font-weight:400;color:#9ca3af">(opcional)</span></div>
+<div class="card">
+  <p class="hint">Resoluções = ≥15s · Ab./Backlog = Geral</p>
+  <div class="chat-col-labels">
+    <span>Nome</span><span>Resoluções (≥15s)</span><span>Ab./Backlog (Geral)</span><span></span>
+  </div>
+  <div id="chat-list"></div>
+  <button class="add-btn" onclick="addChat()">＋ Adicionar colaborador do Chat</button>
+</div>
+
+<div class="lbl">3 · Ver resultado</div>
+<div class="card">
+  <p class="hint">Os resultados aparecem abaixo — tire o print direto da tela!</p>
+  <button class="gen-btn" id="gb" onclick="mostrar()" disabled>🌿 Mostrar resultado</button>
+</div>
+
+<!-- RESULTADO PARA PRINT -->
+<div id="resultado">
+  <div class="res-card" id="res-card">
+    <div class="res-header">
+      <div class="brand">⚡ iGREEN ENERGY</div>
+      <h2>Desempenho dos Colaboradores</h2>
+      <div class="date" id="res-date"></div>
+    </div>
+    <table class="res-table">
+      <thead>
+        <tr>
+          <th>Colaborador</th>
+          <th>≥ 15s ↓</th>
+          <th>Geral</th>
+        </tr>
+      </thead>
+      <tbody id="res-body"></tbody>
+    </table>
+    <div class="res-footer">Processado automaticamente · iGreen Energy</div>
+  </div>
+</div>
+
+</div>
+<script>
+let AD={}, AN=[], DT='';
+let chatId=0, chatRows=[];
+
+function dp(ev){ev.preventDefault();document.getElementById('dz').classList.remove('over');hCSV(ev.dataTransfer.files[0]);}
+function hCSV(f){if(!f)return;const r=new FileReader();r.onload=e=>pCSV(e.target.result);r.readAsText(f,'UTF-8');}
+function pr(p,l){document.getElementById('pw').style.display='block';document.getElementById('pb').style.width=p+'%';document.getElementById('pl').textContent=l;}
+function sl(line,sep){const c=[];let cur='',q=false;for(let i=0;i<line.length;i++){if(line[i]==='"'){q=!q;}else if(line[i]===sep&&!q){c.push(cur);cur='';}else cur+=line[i];}c.push(cur);return c;}
+function pt(s){if(!s)return 0;const p=String(s).trim().split(':');if(p.length===3)return+p[0]*3600+ +p[1]*60+ +p[2];if(p.length===2)return+p[0]*60+ +p[1];return 0;}
+
+function pCSV(text){
+  pr(10,'Lendo...');
+  const lines=text.split(/\r?\n/).filter(l=>l.trim());
+  const sep=lines[0].includes(';')?';':',';
+  const hdr=sl(lines[0],sep).map(h=>h.trim().replace(/^"|"$/g,'').toLowerCase());
+  const ia=hdr.indexOf('agent_name'),it=hdr.indexOf('speaking_with_agent_time'),id=hdr.indexOf('call_date');
+  pr(40,'Contando...');
+  const cnt={},c15={};
+  for(let i=1;i<lines.length;i++){
+    const row=sl(lines[i],sep);
+    const ag=(row[ia]||'').replace(/^"|"$/g,'').trim();
+    if(!ag)continue;
+    if(!DT&&row[id])DT=(row[id]||'').replace(/^"|"$/g,'').trim().split(' ')[0];
+    const s=pt((row[it]||'').replace(/^"|"$/g,'').trim());
+    cnt[ag]=(cnt[ag]||0)+1;
+    if(s>=15)c15[ag]=(c15[ag]||0)+1;
+  }
+  AD={};AN=Object.keys(cnt).sort();
+  for(const n of AN)AD[n]={total:cnt[n]||0,above15:c15[n]||0};
+  pr(100,'✅ Pronto!');
+  document.getElementById('c1').classList.add('done');
+  const tot=Object.values(cnt).reduce((a,b)=>a+b,0);
+  const tot15=Object.values(c15).reduce((a,b)=>a+b,0);
+  document.getElementById('csv-badge').innerHTML=`<div class="badge">✅ ${AN.length} agentes · ${tot} ligações · ${tot15} acima de 15s</div>`;
+  document.getElementById('gb').disabled=false;
+}
+
+function addChat(){
+  const id=chatId++;chatRows.push(id);
+  const div=document.createElement('div');div.className='chat-row';div.id='cr_'+id;
+  div.innerHTML=`
+    <input type="text" placeholder="Nome do colaborador" id="cn_${id}">
+    <input type="number" min="0" value="0" id="cr2_${id}">
+    <input type="number" min="0" value="0" id="ca_${id}">
+    <button class="rm-btn" onclick="rmChat(${id})">×</button>`;
+  document.getElementById('chat-list').appendChild(div);
+}
+function rmChat(id){chatRows=chatRows.filter(r=>r!==id);document.getElementById('cr_'+id)?.remove();}
+
+function getChatData(){
+  return chatRows.map(id=>({
+    nome:(document.getElementById('cn_'+id)?.value||'').trim(),
+    above15:+(document.getElementById('cr2_'+id)?.value||0),
+    total:+(document.getElementById('ca_'+id)?.value||0),
+    tipo:'chat'
+  })).filter(r=>r.nome);
+}
+
+function mostrar(){
+  const chatData=getChatData();
+  // Mapa unificado: mesmo nome = soma valores
+  const mapa={};
+  AN.forEach(n=>{
+    mapa[n.toLowerCase()]={nome:n,above15:AD[n].above15,total:AD[n].total,tipo:'lig'};
+  });
+  chatData.forEach(c=>{
+    const key=c.nome.toLowerCase();
+    if(mapa[key]){mapa[key].above15+=c.above15;mapa[key].total+=c.total;mapa[key].tipo='ambos';}
+    else mapa[key]={nome:c.nome,above15:c.above15,total:c.total,tipo:'chat'};
+  });
+  const all=Object.values(mapa).sort((a,b)=>b.above15-a.above15);
+
+  document.getElementById('res-date').textContent='📅 '+(DT||new Date().toLocaleDateString('pt-BR'));
+
+  let t15=0,tG=0;
+  const rows=all.map((item,i)=>{
+    t15+=item.above15;tG+=item.total;
+    let badge='';
+    if(item.tipo==='lig')badge='<span class="type-lig">LIG</span>';
+    else if(item.tipo==='chat')badge='<span class="type-chat">CHAT</span>';
+    else badge='<span class="type-lig">LIG</span><span class="type-chat">CHAT</span>';
+    return '<tr><td><span class="rank">'+(i+1)+'º</span>'+badge+'<span class="name">'+item.nome+'</span></td><td><span class="pill-green">'+item.above15+'</span></td><td><span class="pill-light">'+item.total+'</span></td></tr>';
+  }).join('');
+
+  document.getElementById('res-body').innerHTML=rows+`
+    <tr class="total-row">
+      <td><span class="name">TOTAL DA EQUIPE</span></td>
+      <td><span class="pill-green">${t15}</span></td>
+      <td><span class="pill-light">${tG}</span></td>
+    </tr>`;
+
+  const res=document.getElementById('resultado');
+  res.style.display='block';
+  res.scrollIntoView({behavior:'smooth'});
+}
+</script>
+</body>
+</html>
